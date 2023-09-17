@@ -13,6 +13,15 @@ namespace SalesWebMVC.Controllers
             _logger = logger;
         }
 
+        public IActionResult About()
+        {
+            ViewData["Message"] = "Sales WEB MVC App";
+            ViewData["Developer"] = "Bernardo Meine";
+
+
+            return View();
+        }
+
         public IActionResult Index()
         {
             return View();
