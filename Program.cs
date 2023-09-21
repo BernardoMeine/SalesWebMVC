@@ -11,6 +11,8 @@ namespace SalesWebMVC
             builder.Services.AddDbContext<SalesWebMVCContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SalesWebMVCContext") ?? throw new InvalidOperationException("Connection string 'SalesWebMVCContext' not found.")));
 
+            builder.Services.AddScoped<SeedingService>();
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
@@ -30,6 +32,13 @@ namespace SalesWebMVC
             app.UseRouting();
 
             app.UseAuthorization();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var seedingService = services.GetRequiredService<SeedingService>();
+                seedingService.Seed();
+            }
 
             app.MapControllerRoute(
                 name: "default",
