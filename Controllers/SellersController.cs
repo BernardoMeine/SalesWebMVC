@@ -4,6 +4,7 @@ using SalesWebMVC.Models.ViewModels;
 using SalesWebMVC.Services;
 using SalesWebMVC.Services.Exception;
 using System.Data;
+using System.Diagnostics;
 
 namespace SalesWebMVC.Controllers
 {
@@ -44,13 +45,13 @@ namespace SalesWebMVC.Controllers
         {
             if(id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof (Error), new { message = "Id not found"});
             }
 
             var obj = _sellerService.FindById(id.Value);
             if(obj == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             return View(obj);
@@ -68,13 +69,13 @@ namespace SalesWebMVC.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             var obj = _sellerService.FindById(id.Value);
             if (obj == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             return View(obj);
@@ -84,13 +85,13 @@ namespace SalesWebMVC.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             var obj = _sellerService.FindById(id.Value);
             if (obj == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             List<Department> departments = _departmentsService.FindAll();
@@ -107,15 +108,25 @@ namespace SalesWebMVC.Controllers
             _sellerService.Update(seller);
             return RedirectToAction(nameof(Index));
             }
-            catch (NotFoundException)
+            catch (NotFoundException e)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = e.Message });
             }
-            catch(DBConcurrencyException)
+            catch(DBConcurrencyException e)
             {
-                return BadRequest();
+                return RedirectToAction(nameof(Error), new { message = e.Message});
             }
         }
 
+        public IActionResult Error(string message)
+        {
+            var viewModel = new ErrorViewModel
+            {
+                Message = message,
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            };
+
+            return View(viewModel);
+        }
     }
 }
